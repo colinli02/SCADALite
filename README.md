@@ -15,8 +15,9 @@ It supports:
 - Historical log loading
 - Config-driven graph selection
 
-File structure:
+## File Structure
 
+```text
 scadalite/
 │
 ├── app.py          ← GUI
@@ -26,8 +27,7 @@ scadalite/
 ├── storage.py      ← history + latest + log_record + handle_record
 ├── config.py
 └── main.py
-
----
+```
 
 ## Installation
 
@@ -37,33 +37,113 @@ cd scadalite
 pip install -r requirements.txt
 ```
 
-## Configuring 
+## Configuration and Usage
 
-Modify config.yaml
+Modify `config.yaml` with the tags you want to use. See the current config for examples.
 
-## COM Mode details
+## Tag Types
 
-Make sure your com port (for example arduino) uses this format in printf:
+SCADALite parses every incoming telemetry line into a `TagRecord` with the following fields:
 
+- **TAG** — name of the measurement
+- **TYPE** — the kind of signal
+- **PV** — process value (numeric reading)
+- **SP** — setpoint (optional)
+- **UNIT** — engineering units (optional)
+- **TS** — timestamp
+
+### Available Signal Types
+
+| Type | Meaning |
+|------|----------|
+| **ai** | Analog input (sensor value, e.g., speed, temperature, level) |
+| **do** | Digital output (0/1 command, e.g., heater on/off) |
+| **CONST** | Constant value defined in `config.yaml` |
+
+## COM Input Formats
+
+SCADALite supports multiple input formats depending on how much information you want to send.
+
+### Simple Format
+
+TYPE defaults to `ai`.
+
+#### Simple Format Syntax
+
+```text
 TAG PV
+```
 
-TAG — the name of the measurement
+#### Simple Format Example
 
-PV — the numeric value
+```text
+PUMP1_SPEED 1500
+```
 
-So for example, this will be detected:
+#### Parsed Values
 
-PUMP1_SPEED 1500\n
+- `TYPE = ai`
+- `PV = 1500`
+- `SP = (empty)`
+- `UNIT = (empty)`
 
-and under config.yaml
+### Key/Value Format
 
-graph_tags:
-  - PUMP1_SPEED
+Explicitly specify `TYPE`, `SP`, and `UNIT`.
 
-## Running
+#### Key/Value Example
 
-run the main.py file from cd
+```text
+TAG=PUMP1_SPEED;TYPE=ai;PV=1332.8;SP=1500;UNIT=RPM;
+```
 
+#### Supported Fields
+
+- `TYPE`
+- `PV`
+- `SP`
+- `UNIT`
+
+### CSV Format
+
+#### CSV Syntax
+
+```text
+TAG,TYPE,PV,SP,UNIT
+```
+
+#### CSV Example
+
+```text
+PUMP1_SPEED,ai,1332.8,1500,RPM
+```
+
+## Constants
+
+You can define constant tags directly in `config.yaml`.
+
+### Constant Configuration Example
+
+```yaml
+constants:
+  TARGET_SPEED: 1500
+  TARGET_LEVEL: 80
+```
+
+These appear with:
+
+- `TYPE = CONST`
+- `PV = your constant value`
+- `SP = (empty)`
+
+Constants are graphed by default.
+
+## Running SCADALite
+
+Run from the project root (cd)
+
+```bash
 py -m scadalite.main
+```
 
-or run the .bat file
+Or run the `.bat` file directly on Windows

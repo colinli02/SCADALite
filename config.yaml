@@ -3,8 +3,9 @@ com_port: COM5
 baud: 115200
 
 graph_tags:
-  - PUMP1_SPEED
-  - TANK1_LEVEL
+- PUMP1_SPEED
+- TANK1_LEVEL
+
 
 alarms:
   PUMP1_SPEED:
@@ -14,3 +15,8 @@ alarms:
   TANK1_LEVEL:
     hi: 90
     lo: 60
+
+constants:
+  TARGET_SPEED: 1500
+  TARGET_LEVEL: 80
+

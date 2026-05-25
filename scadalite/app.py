@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, filedialog
+import datetime
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import threading
@@ -132,6 +133,28 @@ class Print2PanelApp(tk.Tk):
             t = threading.Thread(target=com_stream, args=(self.stop_event, handle_record, port, baud), daemon=True)
             t.start()
 
+        if "constants" in self.config_data:
+            consts = self.config_data["constants"]
+            from .parser import TagRecord
+
+            def constant_stream():
+                while not self.stop_event.is_set():
+                    ts = datetime.datetime.utcnow().isoformat()
+                    for tag, pv in consts.items():
+                        rec = TagRecord(
+                            tag=tag,
+                            type="CONST",
+                            pv=float(pv),
+                            sp=None,
+                            unit="",
+                            ts=ts
+                        )
+                        handle_record(rec)
+                    time.sleep(1)
+
+            threading.Thread(target=constant_stream, daemon=True).start()
+
+
     # ---------- Periodic GUI updates ----------
 
     def _schedule_updates(self):
@@ -140,6 +163,7 @@ class Print2PanelApp(tk.Tk):
         self._update_alarms()
         self.after(500, self._schedule_updates)
         self._update_configured_alarms()
+        self.graph_tags.update(self.config_data.get("constants", {}).keys()) # auto add constants to graph
 
     def _update_alarms(self):
         self.alarm_list.delete(0, tk.END)
