@@ -37,6 +37,29 @@ cd scadalite
 pip install -r requirements.txt
 ```
 
+## Configuring 
+
+Modify config.yaml
+
+## COM Mode details
+
+Make sure your com port (for example arduino) uses this format in printf:
+
+TAG PV
+
+TAG — the name of the measurement
+
+PV — the numeric value
+
+So for example, this will be detected:
+
+PUMP1_SPEED 1500\n
+
+and under config.yaml
+
+graph_tags:
+  - PUMP1_SPEED
+
 ## Running
 
 run the main.py file from cd
