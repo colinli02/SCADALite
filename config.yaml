@@ -1,0 +1,16 @@
+mode: SIMULATION
+com_port: COM5
+baud: 115200
+
+graph_tags:
+  - PUMP1_SPEED
+  - TANK1_LEVEL
+
+alarms:
+  PUMP1_SPEED:
+    hi: 1600
+    lo: 1200
+
+  TANK1_LEVEL:
+    hi: 90
+    lo: 60
