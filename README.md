@@ -15,6 +15,13 @@ It supports:
 - Historical log loading
 - Config-driven graph selection
 
+## Design choices
+
+- Tkinter is single threaded, so one thread is allocated for GUI and other for background reading to prevent freezes.
+- Safe shutdown of thread using stop event
+- Unified record parser, everything is parsed by one function and into one structure (TagRecord)
+- Streams do not store or process data to prevent race conditions
+
 ## File Structure
 
 ```text
